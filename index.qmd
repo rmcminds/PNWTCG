@@ -2,15 +2,9 @@
 title: Home
 ---
 
-# Welcome
-
-This site contains documentation and notes organized by topic.
+This site contains rendered .qmd files in the same directory structure as the source repository.
 
 Use the navigation sidebar to browse the available documents.
-
-## Contents
-
-The pages are organized according to the repository directory structure. Each section in the sidebar corresponds to a folder, with nested folders appearing as nested sections.
 
 ## Search
 

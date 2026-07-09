@@ -1,3 +1,7 @@
+---
+title: "Finding Documentation"
+---
+
 # Basic R function help
 The first thing to try when you want to find documentation for a function is the `?` operator.
 ```{r}
@@ -50,11 +54,11 @@ methods(plot)
 
 # Finding help for R6 methods
 Some R packages use the R6 object-oriented system, which has a different way of defining methods. Use of `?` isn't standardized for these methods, but you can usually at least get into the documentation for the class and then click to the method you're interested in. For example, the `CmdStanModel` class in the `cmdstanr` package has a `sample()` method for fitting models. You can get help for this method by running:
-```{r}
+```{r, eval=FALSE}
 ?CmdStanModel # and then click $sample()
 ```
 `cmdstanr` also has shortcuts to get to specific method documentation:
-```{r}
+```{r, eval=FALSE}
 ?'model-method-sample'
 ```
 But the name of this shortcut is not standardized across other packages. Instead, use the help() function:
