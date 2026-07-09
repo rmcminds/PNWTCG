@@ -1,0 +1,17 @@
+---
+title: Home
+---
+
+# Welcome
+
+This site contains documentation and notes organized by topic.
+
+Use the navigation sidebar to browse the available documents.
+
+## Contents
+
+The pages are organized according to the repository directory structure. Each section in the sidebar corresponds to a folder, with nested folders appearing as nested sections.
+
+## Search
+
+Use the search box in the sidebar (or press <kbd>/</kbd>) to quickly find pages by title or content.

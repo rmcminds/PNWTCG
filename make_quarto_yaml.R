@@ -22,6 +22,7 @@ cat(
 
 website:
   title: "The Pacific Northwest Tribal Coding Group"
+  search: true
   navbar:
     left:
       - href: index.qmd
