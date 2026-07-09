@@ -14,23 +14,35 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libgdal-dev libgeos-dev libproj-dev libudunits2-dev
+
       - name: Install R
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: '4.5.3'
           use-public-rspm: true
 
+      - name: Install R packages
+        shell: Rscript {0}
+        run: |
+          options(repos = c(Stan = "https://mc-stan.org/r-packages/", CRAN = "https://packagemanager.posit.co/cran/latest"))
+          install.packages("renv")
+          deps <- renv::dependencies(
+            root = normalizePath("."),
+            path = qmd
+          )
+          pkgs <- unique(deps$Package)
+          pkgs <- setdiff(pkgs, c("R", NA))
+          install.packages(pkgs)
+
       - name: Create _quarto.yml
         run: Rscript make_quarto_yaml.R
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
-
-      - name: Install R Dependencies
-        uses: r-lib/actions/setup-renv@v2
-        with:
-          working-directory: site_renv
-          cache-version: 1
 
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
