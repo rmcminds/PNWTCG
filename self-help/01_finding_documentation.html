@@ -212,8 +212,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="basic-r-function-help" class="level1">
-<h1>Basic R function help</h1>
+<section id="basic-r-function-help" class="level2">
+<h2 class="anchored" data-anchor-id="basic-r-function-help">Basic R function help</h2>
 <p>The first thing to try when you want to find documentation for a function is the <code>?</code> operator.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>?mean</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -222,8 +222,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">help</span>(mean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="finding-help-for-special-functions" class="level1">
-<h1>Finding help for special functions</h1>
+<section id="finding-help-for-special-functions" class="level2">
+<h2 class="anchored" data-anchor-id="finding-help-for-special-functions">Finding help for special functions</h2>
 <p>Some functions have special characters in their names, such as <code>[</code> or <code>%in%</code>. To find help for these functions, you need to use backticks around the function name.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>?<span class="st">`</span><span class="at">[</span><span class="st">`</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -235,8 +235,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>?<span class="st">`</span><span class="at">%in%</span><span class="st">`</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="finding-help-for-functions-in-packages" class="level1">
-<h1>Finding help for functions in packages</h1>
+<section id="finding-help-for-functions-in-packages" class="level2">
+<h2 class="anchored" data-anchor-id="finding-help-for-functions-in-packages">Finding help for functions in packages</h2>
 <p>If you haven’t loaded the package that contains the function you are interested in, the <code>?</code> operator may not work.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>?st_sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -259,8 +259,8 @@ you could try '??st_sf'</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>?st_sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="finding-help-for-generic-s3-and-s4-functions" class="level1">
-<h1>Finding help for generic S3 and S4 functions</h1>
+<section id="finding-help-for-generic-s3-and-s4-functions" class="level2">
+<h2 class="anchored" data-anchor-id="finding-help-for-generic-s3-and-s4-functions">Finding help for generic S3 and S4 functions</h2>
 <p>Some R functions are generic, meaning they have different methods for different classes of objects. For example, the <code>plot()</code> function has different methods for plotting data frames, time series, and other object types. Running <code>?plot</code> may give you general information about the function, but may not provide details about the specific method you are interested in.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>?plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -312,8 +312,8 @@ see '?methods' for accessing help and source code</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>?plot.lm</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="finding-help-for-r6-methods" class="level1">
-<h1>Finding help for R6 methods</h1>
+<section id="finding-help-for-r6-methods" class="level2">
+<h2 class="anchored" data-anchor-id="finding-help-for-r6-methods">Finding help for R6 methods</h2>
 <p>Some R packages use the R6 object-oriented system, which has a different way of defining methods. Use of <code>?</code> isn’t standardized for these methods, but you can usually at least get into the documentation for the class and then click to the method you’re interested in. For example, the <code>CmdStanModel</code> class in the <code>cmdstanr</code> package has a <code>sample()</code> method for fitting models. You can get help for this method by running:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>?CmdStanModel <span class="co"># and then click $sample()</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -327,8 +327,8 @@ see '?methods' for accessing help and source code</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">help</span>(<span class="st">"sample"</span>, <span class="at">package =</span> <span class="st">"cmdstanr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="finding-help-for-functions-that-you-wrote" class="level1">
-<h1>Finding help for functions that you wrote</h1>
+<section id="finding-help-for-functions-that-you-wrote" class="level2">
+<h2 class="anchored" data-anchor-id="finding-help-for-functions-that-you-wrote">Finding help for functions that you wrote</h2>
 <p>For the love of salmon, please annotate your code. For short scripts and on-the-fly helper functions, make sure to use comments to explain what the function does, what the inputs are, and what the outputs are. If you are using Positron and your function is defined anywhere in your project directory, you can right-click on the function name and select “Go to Definition” to jump to the code for that function (and the comments should be there too!). You can also use Ctrl+F to search for the function in your file, or Ctrl+Shift+F to search for the function name in your project directory. If you use consistent whitespace rules and unique function names, you can search for <code>function_name &lt;-</code> to separate the function definition from other function references.</p>
 
 

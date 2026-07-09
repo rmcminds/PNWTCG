@@ -213,8 +213,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>Sometimes, the documentation doesn’t tell you everything you need to know. You need to get elbow-deep in the code</p>
-<section id="first-attempt" class="level1">
-<h1>First attempt</h1>
+<section id="first-attempt" class="level2">
+<h2 class="anchored" data-anchor-id="first-attempt">First attempt</h2>
 <p>The source code for many functions can be found by simply calling the function without parentheses.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>hello_world <span class="ot">&lt;-</span> \() {</span>
@@ -233,8 +233,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="finding-the-source-code-for-s3-and-s4-methods" class="level1">
-<h1>Finding the source code for S3 and S4 methods</h1>
+<section id="finding-the-source-code-for-s3-and-s4-methods" class="level2">
+<h2 class="anchored" data-anchor-id="finding-the-source-code-for-s3-and-s4-methods">Finding the source code for S3 and S4 methods</h2>
 <p>Generic functions, which have different methods for different classes of objects, require the specific method to be called. You can use the <code>methods()</code> function to see what methods are available for a generic function, and then append the method to the generic function name to see the source code for that specific method.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">methods</span>(mean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -269,13 +269,13 @@ see '?methods' for accessing help and source code</code></pre>
     }
     .Internal(mean(x))
 }
-&lt;bytecode: 0x55df46d71550&gt;
+&lt;bytecode: 0x55da7829d550&gt;
 &lt;environment: namespace:base&gt;</code></pre>
 </div>
 </div>
 </section>
-<section id="finding-the-source-code-for-r6-methods" class="level1">
-<h1>Finding the source code for R6 methods</h1>
+<section id="finding-the-source-code-for-r6-methods" class="level2">
+<h2 class="anchored" data-anchor-id="finding-the-source-code-for-r6-methods">Finding the source code for R6 methods</h2>
 <p>R6 objects are a bit harder because the methods are stored in the object itself. If you have an R6 object, you can use the <code>$</code> operator and the name of the source just like a simpler function.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span>
@@ -288,8 +288,8 @@ see '?methods' for accessing help and source code</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>cmdstanr<span class="sc">:::</span>CmdStanModel<span class="sc">$</span>public_methods<span class="sc">$</span>sample</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="finding-the-one-true-source" class="level1">
-<h1>Finding the One True Source</h1>
+<section id="finding-the-one-true-source" class="level2">
+<h2 class="anchored" data-anchor-id="finding-the-one-true-source">Finding the One True Source</h2>
 <p>Functions of course call other functions, and some call on tools that are written in another language or even compiled code. You’ll have to follow that trail of breadcrumbs.</p>
 
 
