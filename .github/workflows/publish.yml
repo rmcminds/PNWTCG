@@ -26,17 +26,7 @@ jobs:
           use-public-rspm: true
 
       - name: Install R packages
-        shell: Rscript {0}
-        run: |
-          options(repos = c(Stan = "https://mc-stan.org/r-packages/", CRAN = "https://packagemanager.posit.co/cran/latest"))
-          install.packages("renv")
-          deps <- renv::dependencies(
-            root = normalizePath("."),
-            path = qmd
-          )
-          pkgs <- unique(deps$Package)
-          pkgs <- setdiff(pkgs, c("R", NA))
-          install.packages(pkgs)
+        uses: r-lib/actions/setup-renv@v2
 
       - name: Create _quarto.yml
         run: Rscript make_quarto_yaml.R
