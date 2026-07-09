@@ -58,7 +58,7 @@ Some R packages use the R6 object-oriented system, which has a different way of 
 ?'model-method-sample'
 ```
 But the name of this shortcut is not standardized across other packages. Instead, use the help() function:
-```{r}
+```{r, eval=FALSE}
 help("sample", package = "cmdstanr")
 ```
 
