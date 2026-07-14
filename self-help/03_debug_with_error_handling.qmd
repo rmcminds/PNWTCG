@@ -8,15 +8,12 @@ When writing scripts, you rarely want a future run with new data to crash and em
 Warning message:
 NAs introduced by coercion 
 :::
-::: {.cell-output .cell-output-stdout}
-[1] NA
-:::
 
 The code ran fine before! Did you run the script with a typo in a parameter? Or is there badly formatted data in your new input file? Which of the 10,000 rows has the bad data??
 
 If you're developing a tool or planning to reuse your script, you can save a lot of headaches in the long-run by writing your code to validate inputs and fail early with bespoke, informative messages.
 
-For instance, say you have a script that simply reads a csv and writes a new one with rounded values from a single column:
+For instance, say you have a function that simply reads a csv and writes a new one with rounded values from a single column:
 
 ```{r}
 round_column <- function(df, col_num_raw, prec_raw) {
@@ -27,7 +24,7 @@ round_column <- function(df, col_num_raw, prec_raw) {
 }
 ```
 
-You might run this script with a test dataset:
+You might run this function with a test dataset:
 
 ```{r}
 test_data_1 <- data.frame(
@@ -35,10 +32,14 @@ test_data_1 <- data.frame(
   values = c(10.556, 21.891, 3.14159)
 )
 print(test_data_1)
-round_column(test_data_1, 2, 2)
+results_1 <- round_column(test_data_1, 2, 2)
 ```
 
 And celebrate that it works!
+
+```{r}
+print(results_1)
+```
 
 But then you try some real data:
 
@@ -48,5 +49,7 @@ test_data_2 <- data.frame(
   values = c(10.556, 21.891, '3.141S9')
 )
 print(test_data_2)
-round_column(test_data_2, 2, 2)
+results_2 <- round_column(test_data_2, 2, 2)
 ```
+
+Well that's vague!
