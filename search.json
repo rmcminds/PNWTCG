@@ -14,6 +14,66 @@
     "text": "Search\nUse the search box in the sidebar (or press /) to quickly find pages by title or content."
   },
   {
+    "objectID": "self-help/02_finding_source_code.html",
+    "href": "self-help/02_finding_source_code.html",
+    "title": "Finding Source Code",
+    "section": "",
+    "text": "Sometimes, the documentation doesn’t tell you everything you need to know. You need to get elbow-deep in the code",
+    "crumbs": [
+      "Home",
+      "self-help",
+      "Finding Source Code"
+    ]
+  },
+  {
+    "objectID": "self-help/02_finding_source_code.html#first-attempt",
+    "href": "self-help/02_finding_source_code.html#first-attempt",
+    "title": "Finding Source Code",
+    "section": "First attempt",
+    "text": "First attempt\nThe source code for many functions can be found by simply calling the function without parentheses.\n\nhello_world &lt;- \\() {\n  print(\"Hello, world!\")\n}\nhello_world()\n\n[1] \"Hello, world!\"\n\nhello_world\n\nfunction () \n{\n    print(\"Hello, world!\")\n}",
+    "crumbs": [
+      "Home",
+      "self-help",
+      "Finding Source Code"
+    ]
+  },
+  {
+    "objectID": "self-help/02_finding_source_code.html#finding-the-source-code-for-s3-and-s4-methods",
+    "href": "self-help/02_finding_source_code.html#finding-the-source-code-for-s3-and-s4-methods",
+    "title": "Finding Source Code",
+    "section": "Finding the source code for S3 and S4 methods",
+    "text": "Finding the source code for S3 and S4 methods\nGeneric functions, which have different methods for different classes of objects, require the specific method to be called. You can use the methods() function to see what methods are available for a generic function, and then append the method to the generic function name to see the source code for that specific method.\n\nmethods(mean)\n\n[1] mean.Date     mean.default  mean.difftime mean.POSIXct  mean.POSIXlt \n[6] mean.quosure*\nsee '?methods' for accessing help and source code\n\nmean.default\n\nfunction (x, trim = 0, na.rm = FALSE, ...) \n{\n    if (!is.numeric(x) && !is.complex(x) && !is.logical(x)) {\n        warning(\"argument is not numeric or logical: returning NA\")\n        return(NA_real_)\n    }\n    if (isTRUE(na.rm)) \n        x &lt;- x[!is.na(x)]\n    if (!is.numeric(trim) || length(trim) != 1L) \n        stop(\"'trim' must be numeric of length one\")\n    n &lt;- length(x)\n    if (trim &gt; 0 && n) {\n        if (is.complex(x)) \n            stop(\"trimmed means are not defined for complex data\")\n        if (anyNA(x)) \n            return(NA_real_)\n        if (trim &gt;= 0.5) \n            return(stats::median(x, na.rm = FALSE))\n        lo &lt;- floor(n * trim) + 1\n        hi &lt;- n + 1 - lo\n        x &lt;- sort.int(x, partial = unique(c(lo, hi)))[lo:hi]\n    }\n    .Internal(mean(x))\n}\n&lt;bytecode: 0x55d191fbd550&gt;\n&lt;environment: namespace:base&gt;",
+    "crumbs": [
+      "Home",
+      "self-help",
+      "Finding Source Code"
+    ]
+  },
+  {
+    "objectID": "self-help/02_finding_source_code.html#finding-the-source-code-for-r6-methods",
+    "href": "self-help/02_finding_source_code.html#finding-the-source-code-for-r6-methods",
+    "title": "Finding Source Code",
+    "section": "Finding the source code for R6 methods",
+    "text": "Finding the source code for R6 methods\nR6 objects are a bit harder because the methods are stored in the object itself. If you have an R6 object, you can use the $ operator and the name of the source just like a simpler function.\n\nlibrary(cmdstanr)\nfile &lt;- file.path(cmdstan_path(), \"examples/bernoulli/bernoulli.stan\")\nmod  &lt;- cmdstan_model(file)\nmod$sample\n\nIf you don’t yet have an R6 object, the class name is usually the same as the function that creates it, and although that function may not be exported when you use library(), you can use the ::: operator and find the method under public_methods.\n\ncmdstanr:::CmdStanModel$public_methods$sample",
+    "crumbs": [
+      "Home",
+      "self-help",
+      "Finding Source Code"
+    ]
+  },
+  {
+    "objectID": "self-help/02_finding_source_code.html#finding-the-one-true-source",
+    "href": "self-help/02_finding_source_code.html#finding-the-one-true-source",
+    "title": "Finding Source Code",
+    "section": "Finding the One True Source",
+    "text": "Finding the One True Source\nFunctions of course call other functions, and some call on tools that are written in another language or even compiled code. You’ll have to follow that trail of breadcrumbs.",
+    "crumbs": [
+      "Home",
+      "self-help",
+      "Finding Source Code"
+    ]
+  },
+  {
     "objectID": "self-help/01_finding_documentation.html",
     "href": "self-help/01_finding_documentation.html",
     "title": "Finding Documentation",
@@ -98,63 +158,15 @@
     ]
   },
   {
-    "objectID": "self-help/02_finding_source_code.html",
-    "href": "self-help/02_finding_source_code.html",
-    "title": "Finding Source Code",
+    "objectID": "self-help/03_debug_with_error_handling.html",
+    "href": "self-help/03_debug_with_error_handling.html",
+    "title": "Debugging with error handling",
     "section": "",
-    "text": "Sometimes, the documentation doesn’t tell you everything you need to know. You need to get elbow-deep in the code",
+    "text": "When writing scripts, you rarely want a future run with new data to crash and emit an error message like:\n\nWarning message: NAs introduced by coercion\n\n\n[1] NA\n\nThe code ran fine before! Did you run the script with a typo in a parameter? Or is there badly formatted data in your new input file? Which of the 10,000 rows has the bad data??\nIf you’re developing a tool or planning to reuse your script, you can save a lot of headaches in the long-run by writing your code to validate inputs and fail early with bespoke, informative messages.\nFor instance, say you have a script that simply reads a csv and writes a new one with rounded values from a single column:\n\nround_column &lt;- function(df, col_num_raw, prec_raw) {\n  col_num &lt;- as.numeric(col_num_raw)\n  prec &lt;- as.numeric(prec_raw)\n  df$rounded &lt;- round(as.numeric(df[[col_num]]), digits = prec)\n  print(df)\n}\n\nYou might run this script with a test dataset:\n\ntest_data_1 &lt;- data.frame(\n  labels = c(\"A\", \"B\", \"C\"),\n  values = c(10.556, 21.891, 3.14159)\n)\nprint(test_data_1)\n\n  labels   values\n1      A 10.55600\n2      B 21.89100\n3      C  3.14159\n\nround_column(test_data_1, 2, 2)\n\n  labels   values rounded\n1      A 10.55600   10.56\n2      B 21.89100   21.89\n3      C  3.14159    3.14\n\n\nAnd celebrate that it works!\nBut then you try some real data:\n\ntest_data_2 &lt;- data.frame(\n  labels = c(\"A\", \"B\", \"C\"),\n  values = c(10.556, 21.891, '3.141S9')\n)\nprint(test_data_2)\n\n  labels  values\n1      A  10.556\n2      B  21.891\n3      C 3.141S9\n\nround_column(test_data_2, 2, 2)\n\nWarning in round_column(test_data_2, 2, 2): NAs introduced by coercion\n\n\n  labels  values rounded\n1      A  10.556   10.56\n2      B  21.891   21.89\n3      C 3.141S9      NA",
     "crumbs": [
       "Home",
       "self-help",
-      "Finding Source Code"
-    ]
-  },
-  {
-    "objectID": "self-help/02_finding_source_code.html#first-attempt",
-    "href": "self-help/02_finding_source_code.html#first-attempt",
-    "title": "Finding Source Code",
-    "section": "First attempt",
-    "text": "First attempt\nThe source code for many functions can be found by simply calling the function without parentheses.\n\nhello_world &lt;- \\() {\n  print(\"Hello, world!\")\n}\nhello_world()\n\n[1] \"Hello, world!\"\n\nhello_world\n\nfunction () \n{\n    print(\"Hello, world!\")\n}",
-    "crumbs": [
-      "Home",
-      "self-help",
-      "Finding Source Code"
-    ]
-  },
-  {
-    "objectID": "self-help/02_finding_source_code.html#finding-the-source-code-for-s3-and-s4-methods",
-    "href": "self-help/02_finding_source_code.html#finding-the-source-code-for-s3-and-s4-methods",
-    "title": "Finding Source Code",
-    "section": "Finding the source code for S3 and S4 methods",
-    "text": "Finding the source code for S3 and S4 methods\nGeneric functions, which have different methods for different classes of objects, require the specific method to be called. You can use the methods() function to see what methods are available for a generic function, and then append the method to the generic function name to see the source code for that specific method.\n\nmethods(mean)\n\n[1] mean.Date     mean.default  mean.difftime mean.POSIXct  mean.POSIXlt \n[6] mean.quosure*\nsee '?methods' for accessing help and source code\n\nmean.default\n\nfunction (x, trim = 0, na.rm = FALSE, ...) \n{\n    if (!is.numeric(x) && !is.complex(x) && !is.logical(x)) {\n        warning(\"argument is not numeric or logical: returning NA\")\n        return(NA_real_)\n    }\n    if (isTRUE(na.rm)) \n        x &lt;- x[!is.na(x)]\n    if (!is.numeric(trim) || length(trim) != 1L) \n        stop(\"'trim' must be numeric of length one\")\n    n &lt;- length(x)\n    if (trim &gt; 0 && n) {\n        if (is.complex(x)) \n            stop(\"trimmed means are not defined for complex data\")\n        if (anyNA(x)) \n            return(NA_real_)\n        if (trim &gt;= 0.5) \n            return(stats::median(x, na.rm = FALSE))\n        lo &lt;- floor(n * trim) + 1\n        hi &lt;- n + 1 - lo\n        x &lt;- sort.int(x, partial = unique(c(lo, hi)))[lo:hi]\n    }\n    .Internal(mean(x))\n}\n&lt;bytecode: 0x55da7829d550&gt;\n&lt;environment: namespace:base&gt;",
-    "crumbs": [
-      "Home",
-      "self-help",
-      "Finding Source Code"
-    ]
-  },
-  {
-    "objectID": "self-help/02_finding_source_code.html#finding-the-source-code-for-r6-methods",
-    "href": "self-help/02_finding_source_code.html#finding-the-source-code-for-r6-methods",
-    "title": "Finding Source Code",
-    "section": "Finding the source code for R6 methods",
-    "text": "Finding the source code for R6 methods\nR6 objects are a bit harder because the methods are stored in the object itself. If you have an R6 object, you can use the $ operator and the name of the source just like a simpler function.\n\nlibrary(cmdstanr)\nfile &lt;- file.path(cmdstan_path(), \"examples/bernoulli/bernoulli.stan\")\nmod  &lt;- cmdstan_model(file)\nmod$sample\n\nIf you don’t yet have an R6 object, the class name is usually the same as the function that creates it, and although that function may not be exported when you use library(), you can use the ::: operator and find the method under public_methods.\n\ncmdstanr:::CmdStanModel$public_methods$sample",
-    "crumbs": [
-      "Home",
-      "self-help",
-      "Finding Source Code"
-    ]
-  },
-  {
-    "objectID": "self-help/02_finding_source_code.html#finding-the-one-true-source",
-    "href": "self-help/02_finding_source_code.html#finding-the-one-true-source",
-    "title": "Finding Source Code",
-    "section": "Finding the One True Source",
-    "text": "Finding the One True Source\nFunctions of course call other functions, and some call on tools that are written in another language or even compiled code. You’ll have to follow that trail of breadcrumbs.",
-    "crumbs": [
-      "Home",
-      "self-help",
-      "Finding Source Code"
+      "Debugging with error handling"
     ]
   }
 ]
