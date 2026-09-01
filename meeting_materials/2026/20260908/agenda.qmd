@@ -1,8 +1,8 @@
 ---
-title: "Agenda 20260908"
+title: "agenda"
 ---
 
-# PNW Tribal Coding Group Draft Agenda {style="text-align: center"}
+# PNW Tribal Coding Group Agenda {style="text-align: center"}
 ## September 8th, 2026, 2:00-3:30pm PDT {style="text-align: center"}
 
 ## Agenda
