@@ -1,12 +1,19 @@
 ---
 title: "Agenda"
-title-block-style: none
+format:
+  html:
+    title-block-style: none
 ---
 
-# PNW Tribal Coding Group Agenda {style="text-align: center"}
-## September 8th, 2026, 2:00-3:30pm PDT {style="text-align: center"}
+::: {style="text-align: center;"}
 
-## Agenda
+# PNW Tribal Coding Group Agenda
+
+### September 8th, 2026, 2:00-3:30pm PDT
+
+:::
+
+### Agenda
 
 1. Welcome and Introductions
 2. Open questions and announcements
