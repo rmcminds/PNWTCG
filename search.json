@@ -134,15 +134,15 @@
     ]
   },
   {
-    "objectID": "simple_tips.html",
-    "href": "simple_tips.html",
-    "title": "Random simple tips",
+    "objectID": "basics/useful_tricks.html",
+    "href": "basics/useful_tricks.html",
+    "title": "Useful tricks",
     "section": "",
     "text": "dput() !\nPrint code to the console that can be used to recreate the object\n\nhi &lt;- c(1,2,3)\ndput(hi)\n\nc(1, 2, 3)\n\nhi2 &lt;- 4:6\ndput(hi2)\n\n4:6",
     "crumbs": [
       "Home",
-      ".",
-      "Random simple tips"
+      "basics",
+      "Useful tricks"
     ]
   },
   {
@@ -174,7 +174,7 @@
     "href": "self-help/02_finding_source_code.html#finding-the-source-code-for-s3-and-s4-methods",
     "title": "Finding Source Code",
     "section": "Finding the source code for S3 and S4 methods",
-    "text": "Finding the source code for S3 and S4 methods\nGeneric functions, which have different methods for different classes of objects, require the specific method to be called. You can use the methods() function to see what methods are available for a generic function, and then append the method to the generic function name to see the source code for that specific method.\n\nmethods(mean)\n\n[1] mean.Date     mean.default  mean.difftime mean.POSIXct  mean.POSIXlt \n[6] mean.quosure*\nsee '?methods' for accessing help and source code\n\nmean.default\n\nfunction (x, trim = 0, na.rm = FALSE, ...) \n{\n    if (!is.numeric(x) && !is.complex(x) && !is.logical(x)) {\n        warning(\"argument is not numeric or logical: returning NA\")\n        return(NA_real_)\n    }\n    if (isTRUE(na.rm)) \n        x &lt;- x[!is.na(x)]\n    if (!is.numeric(trim) || length(trim) != 1L) \n        stop(\"'trim' must be numeric of length one\")\n    n &lt;- length(x)\n    if (trim &gt; 0 && n) {\n        if (is.complex(x)) \n            stop(\"trimmed means are not defined for complex data\")\n        if (anyNA(x)) \n            return(NA_real_)\n        if (trim &gt;= 0.5) \n            return(stats::median(x, na.rm = FALSE))\n        lo &lt;- floor(n * trim) + 1\n        hi &lt;- n + 1 - lo\n        x &lt;- sort.int(x, partial = unique(c(lo, hi)))[lo:hi]\n    }\n    .Internal(mean(x))\n}\n&lt;bytecode: 0x561e0453f5c8&gt;\n&lt;environment: namespace:base&gt;",
+    "text": "Finding the source code for S3 and S4 methods\nGeneric functions, which have different methods for different classes of objects, require the specific method to be called. You can use the methods() function to see what methods are available for a generic function, and then append the method to the generic function name to see the source code for that specific method.\n\nmethods(mean)\n\n[1] mean.Date     mean.default  mean.difftime mean.POSIXct  mean.POSIXlt \n[6] mean.quosure*\nsee '?methods' for accessing help and source code\n\nmean.default\n\nfunction (x, trim = 0, na.rm = FALSE, ...) \n{\n    if (!is.numeric(x) && !is.complex(x) && !is.logical(x)) {\n        warning(\"argument is not numeric or logical: returning NA\")\n        return(NA_real_)\n    }\n    if (isTRUE(na.rm)) \n        x &lt;- x[!is.na(x)]\n    if (!is.numeric(trim) || length(trim) != 1L) \n        stop(\"'trim' must be numeric of length one\")\n    n &lt;- length(x)\n    if (trim &gt; 0 && n) {\n        if (is.complex(x)) \n            stop(\"trimmed means are not defined for complex data\")\n        if (anyNA(x)) \n            return(NA_real_)\n        if (trim &gt;= 0.5) \n            return(stats::median(x, na.rm = FALSE))\n        lo &lt;- floor(n * trim) + 1\n        hi &lt;- n + 1 - lo\n        x &lt;- sort.int(x, partial = unique(c(lo, hi)))[lo:hi]\n    }\n    .Internal(mean(x))\n}\n&lt;bytecode: 0x56153c4a8a88&gt;\n&lt;environment: namespace:base&gt;",
     "crumbs": [
       "Home",
       "self-help",
