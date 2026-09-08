@@ -226,12 +226,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Debugging with error handling</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../self-help/04_debugging_loops.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Debugging loops</span></a>
-  </div>
-</li>
       </ul>
   </li>
     </ul>
@@ -262,7 +256,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>When writing scripts, you rarely want a future run with new data to fail with a vague error like:</p>
+<p>When writing scripts, you rarely want a future run with new data to fail with a vague message like:</p>
 <div class="cell">
 <div class="cell-output cell-output-stderr cell-output-warning">
 <pre><code>Warning: NAs introduced by coercion</code></pre>
@@ -275,9 +269,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>round_column <span class="ot">&lt;-</span> <span class="cf">function</span>(df, col_num_raw, prec_raw) {</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  col_num <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(col_num_raw)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  prec    <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(prec_raw)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>rounded <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">as.numeric</span>(df[[col_num]]), <span class="at">digits =</span> prec)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  df</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="fu">as.numeric</span>(df[[col_num]]), <span class="at">digits =</span> prec)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>You might run this function with a test dataset:</p>
 <div class="cell">
@@ -298,10 +291,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results_1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  labels   values rounded
-1      A 10.55600   10.56
-2      B 21.89100   21.89
-3      C  3.14159    3.14</code></pre>
+<pre><code>[1] 10.56 21.89  3.14</code></pre>
 </div>
 </div>
 <p>But then you try some real data:</p>
@@ -322,8 +312,204 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>Warning in round_column(test_data_2, 2, 2): NAs introduced by coercion</code></pre>
 </div>
 </div>
-<p>Well that’s vague!</p>
-<p>If this code is part of a long script, it can be very difficult to figure out what went wrong. And the error could cause you to lose all the work from the previous steps in your script.</p>
+<p>And get the generic warning. In this case, you can print the results to see that the problem was in the last row:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results_2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10.56 21.89    NA</code></pre>
+</div>
+</div>
+<p>But it might not be obvious why. And with more complicated functions, it might not be so easy to see where the problem was. For instance, you could call the function with a non-numeric column number:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>results_3 <span class="ot">&lt;-</span> <span class="fu">round_column</span>(test_data_2, <span class="st">"two"</span>, <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in round_column(test_data_2, "two", 2): NAs introduced by coercion</code></pre>
+</div>
+</div>
+<p>And get the exact same warning. Inspecting the results in this case doesn’t really help you figure out what went wrong:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results_3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>numeric(0)</code></pre>
+</div>
+</div>
+<p>If you plan to use this function a lot, and the same errors are likely, then you can catch the problem pre-emptively and give a more informative custom warning message:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>round_column_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(df, col_num_raw, prec_raw) {</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  col_num <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(col_num_raw))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.na</span>(col_num)) {</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"The column number must be a numeric value."</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  prec <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(prec_raw))</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.na</span>(prec)) {</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"The precision must be a numeric value."</span>)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  in_values <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(df[[col_num]]))</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">any</span>(<span class="fu">is.na</span>(in_values))) {</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">warning</span>(<span class="st">"Row(s) "</span>, <span class="fu">paste</span>(<span class="fu">which</span>(<span class="fu">is.na</span>(in_values)), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">" of the specified column contain(s) non-numeric values that cannot be rounded."</span>)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(in_values, <span class="at">digits =</span> prec)</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>In that function, I have used <code>stop()</code> where a non-numeric column number or precision would make it impossible to continue, and <code>warning()</code> where the function can still run but the user should be aware that some rows could not be processed. I also used <code>suppressWarnings()</code> to keep the console output more targeted. First, apply the function to the same test dataset as before:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>results_4 <span class="ot">&lt;-</span> <span class="fu">round_column_2</span>(test_data_2, <span class="dv">2</span>, <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in round_column_2(test_data_2, 2, 2): Row(s) 3 of the specified column
+contain(s) non-numeric values that cannot be rounded.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results_4)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10.56 21.89    NA</code></pre>
+</div>
+</div>
+<p>And let’s also see what happens when we give it a non-numeric column number:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>results_5 <span class="ot">&lt;-</span> <span class="fu">round_column_2</span>(test_data_2, <span class="st">"two"</span>, <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `round_column_2()`:
+! The column number must be a numeric value.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results_5)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error:
+! object 'results_5' not found</code></pre>
+</div>
+</div>
+<p>Now let’s see how this function behaves when looping over multiple columns. First create a new dataset:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>test_data_3 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>),</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">values_1 =</span> <span class="fu">c</span>(<span class="fl">10.556</span>, <span class="fl">21.891</span>, <span class="st">'3.141S9'</span>),</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">values_2 =</span> <span class="fu">c</span>(<span class="fl">1.234</span>, <span class="fl">5.678</span>, <span class="fl">9.012</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(test_data_3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  labels values_1 values_2
+1      A   10.556    1.234
+2      B   21.891    5.678
+3      C  3.141S9    9.012</code></pre>
+</div>
+</div>
+<p>Then run the function in a <code>for</code> loop over a vector of indices (note that the following code is intentionally written with ‘bad form’ in multiple ways):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="st">'S'</span>,<span class="dv">3</span>,<span class="dv">4</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>results_6 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="fu">nrow</span>(test_data_3), <span class="at">ncol =</span> <span class="dv">0</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (col <span class="cf">in</span> idx) {</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  res_local <span class="ot">&lt;-</span> <span class="fu">round_column_2</span>(test_data_3, col, <span class="dv">2</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  results_6 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(results_6, res_local)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in round_column_2(test_data_3, col, 2): Row(s) 3 of the specified
+column contain(s) non-numeric values that cannot be rounded.</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `round_column_2()`:
+! The column number must be a numeric value.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(results_6) <span class="ot">&lt;-</span> idx</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `dimnames(x) &lt;- dn`:
+! length of 'dimnames' [2] not equal to array extent</code></pre>
+</div>
+</div>
+<p>Warnings and an error. Let’s inspect the results:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results_6)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     res_local
+[1,]     10.56
+[2,]     21.89
+[3,]        NA</code></pre>
+</div>
+</div>
+<p>The first iteration partially worked, the second must have caused the error, and the third and fourth never ran. Depending on what we’re doing, we might want to stop the loop when such an error occurs, or we might want to continue on to the next iteration. In the latter case, we can use <code>tryCatch()</code> to catch the error and continue:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>results_7 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="fu">nrow</span>(test_data_3), <span class="at">ncol =</span> <span class="dv">0</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (col <span class="cf">in</span> idx) {</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  res_local <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>(</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round_column_2</span>(test_data_3, col, <span class="dv">2</span>),</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">warning</span>(<span class="st">"Error in column "</span>, col, <span class="st">": "</span>, e<span class="sc">$</span>message)</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">nrow</span>(test_data_3)))</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  results_7 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(results_7, res_local)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in round_column_2(test_data_3, col, 2): Row(s) 3 of the specified
+column contain(s) non-numeric values that cannot be rounded.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in value[[3L]](cond): Error in column S: The column number must be a
+numeric value.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in value[[3L]](cond): Error in column 4: subscript out of bounds</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(results_7) <span class="ot">&lt;-</span> idx</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>This runs the same function in the same way - but tryCatch catches the error, turns it into a warning, and returns a vector of NAs for that iteration. We see in our new warning that two columns had fatal errors: the second one, ‘S’, wasn’t numeric and couldn’t be mapped to the original data; and the fourth one, 4, didn’t exist. Because we captured the original error message with <code>e$message</code>, we can link that specific warning to the specific column that caused it. And because we returned a vector of NAs, the loop continues to the next iteration and we can inspect the results:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results_7)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         2  S    3  4
+[1,] 10.56 NA 1.23 NA
+[2,] 21.89 NA 5.68 NA
+[3,]    NA NA 9.01 NA</code></pre>
+</div>
+</div>
+<p>This kind of error handling has also set us up nicely to use R’s functional programming tools like <code>lapply()</code> and <code>purrr::map()</code>, which are often preferred to <code>for</code> loops for various reasons. If you’re used to debugging <code>for</code> loops by inspecting partial results, you may be frustrated by the fact that <code>lapply()</code> and <code>map()</code> don’t return partial results. But with tryCatch and custom error messages, you can still get informative feedback about what went wrong in a single iteration without stopping the entire process. Here’s an example using <code>sapply()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>results_8 <span class="ot">&lt;-</span> <span class="fu">sapply</span>(idx, <span class="cf">function</span>(col) {</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round_column_2</span>(test_data_3, col, <span class="dv">2</span>),</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">warning</span>(<span class="st">"Error in column "</span>, col, <span class="st">": "</span>, e<span class="sc">$</span>message)</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">nrow</span>(test_data_3)))</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in round_column_2(test_data_3, col, 2): Row(s) 3 of the specified
+column contain(s) non-numeric values that cannot be rounded.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in value[[3L]](cond): Error in column S: The column number must be a
+numeric value.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in value[[3L]](cond): Error in column 4: subscript out of bounds</code></pre>
+</div>
+</div>
+<p>The results are the same as before, but now we have more compact and efficient code. <code>sapply</code> automatically simplifies the output to a matrix and uses the column indices as column names. The error handling is the same, and we still get informative warnings about which columns caused issues. You can also use <code>purrr::map()</code> in a similar way (I’m not a tidyverse guy so this might not be the most idiomatic way to do it…):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `library()`:
+! there is no package called 'purrr'</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>results_9 <span class="ot">&lt;-</span> <span class="fu">map</span>(idx, <span class="cf">function</span>(col) {</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round_column_2</span>(test_data_3, col, <span class="dv">2</span>),</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">warning</span>(<span class="st">"Error in column "</span>, col, <span class="st">": "</span>, e<span class="sc">$</span>message)</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">nrow</span>(test_data_3)))</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>}) <span class="sc">%&gt;%</span> </span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(idx) <span class="sc">%&gt;%</span> </span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">do.call</span>(cbind, .)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `map(idx, function(col) {
+    tryCatch(round_column_2(test_data_3, col, 2), error = function(e) {
+      warning("Error in column ", col, ": ", e$message)
+      return(rep(NA, nrow(test_data_3)))
+    })
+  }) %&gt;% set_names(idx) %&gt;% do.call(cbind, .)`:
+! could not find function "%&gt;%"</code></pre>
+</div>
+</div>
 
 
 
