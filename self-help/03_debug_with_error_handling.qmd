@@ -125,7 +125,7 @@ for (col in idx) {
   res_local <- round_column_2(test_data_3, col, 2)
   results_6 <- cbind(results_6, res_local)
 }
-colnames(results_6) <- idx
+colnames(results_6) <- idx[1:ncol(results_6)]
 ```
 
 Warnings and an error. Let's inspect the results:
