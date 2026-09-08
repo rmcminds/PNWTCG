@@ -2,26 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://rmcminds.github.io/PNWTCG/meeting_materials/2026/20260908/agenda.html</loc>
-    <lastmod>2026-09-08T20:07:42.669Z</lastmod>
+    <lastmod>2026-09-08T20:53:02.934Z</lastmod>
   </url>
   <url>
     <loc>https://rmcminds.github.io/PNWTCG/self-help/03_debug_with_error_handling.html</loc>
-    <lastmod>2026-09-08T20:07:42.669Z</lastmod>
+    <lastmod>2026-09-08T20:53:02.934Z</lastmod>
   </url>
   <url>
     <loc>https://rmcminds.github.io/PNWTCG/basics/useful_tricks.html</loc>
-    <lastmod>2026-09-08T20:07:42.668Z</lastmod>
+    <lastmod>2026-09-08T20:53:02.933Z</lastmod>
   </url>
   <url>
     <loc>https://rmcminds.github.io/PNWTCG/index.html</loc>
-    <lastmod>2026-09-08T20:07:42.668Z</lastmod>
+    <lastmod>2026-09-08T20:53:02.933Z</lastmod>
+  </url>
+  <url>
+    <loc>https://rmcminds.github.io/PNWTCG/base_vs_tidy/merge_join_and_bind.html</loc>
+    <lastmod>2026-09-08T20:53:02.933Z</lastmod>
   </url>
   <url>
     <loc>https://rmcminds.github.io/PNWTCG/self-help/01_finding_documentation.html</loc>
-    <lastmod>2026-09-08T20:07:42.669Z</lastmod>
+    <lastmod>2026-09-08T20:53:02.934Z</lastmod>
   </url>
   <url>
     <loc>https://rmcminds.github.io/PNWTCG/self-help/02_finding_source_code.html</loc>
-    <lastmod>2026-09-08T20:07:42.669Z</lastmod>
+    <lastmod>2026-09-08T20:53:02.934Z</lastmod>
   </url>
 </urlset>
