@@ -19,7 +19,7 @@ format:
 2. Open questions and announcements
 3. Loops, the apply family, do.call, and purrr
     a. Basic reasons for each (functional programming vs. imperative programming; speed and memory considerations)
-    b. [Debugging patterns](../self-help/03_debug_with_error_handling.qmd) (tryCatch, stop, warning, message)
+    b. [Debugging patterns](../../../self-help/03_debug_with_error_handling.qmd) (tryCatch, stop, warning, message)
     c. Inline logic and anonymous functions
     d. Segue to next session: modularization via functions, scripts, packages, box, and read_chunk!
 4. Compare base to tidy: merge, join, and bind
