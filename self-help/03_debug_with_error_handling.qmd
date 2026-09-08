@@ -1,5 +1,7 @@
 ---
 title: "Debugging with error handling"
+execute:
+  error: true
 ---
 
 When writing scripts, you rarely want a future run with new data to fail with a vague message like:
