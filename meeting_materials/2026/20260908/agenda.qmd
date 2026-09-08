@@ -22,5 +22,5 @@ format:
     b. [Debugging patterns](../../../self-help/03_debug_with_error_handling.qmd) (tryCatch, stop, warning, message)
     c. Inline logic and anonymous functions
     d. Segue to next session: modularization via functions, scripts, packages, box, and read_chunk!
-4. Compare base to tidy: merge, join, and bind
+4. [Compare base to tidy: merge, join, and bind](../../../base_vs_tidy/merge_join_and_bind.qmd)
 5. Other tips and tricks
