@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Agenda – The Pacific Northwest Tribal Coding Group</title>
+<title>Debugging loops – The Pacific Northwest Tribal Coding Group</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -29,24 +29,24 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../../../">
-<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-cc1d60a06f7eebce8535b2069a9b987b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
-<link href="../../../site_libs/quarto-contrib/output-styling/output-styling-default.css" rel="stylesheet">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-39fa877ca9a50db22a6d21c6fddd0724.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/output-styling/output-styling-default.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -85,7 +85,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../../../index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">The Pacific Northwest Tribal Coding Group</span>
     </a>
   </div>
@@ -96,7 +96,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../../index.html"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
 </ul>
@@ -110,7 +110,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../meeting_materials/2026/20260908/agenda.html">meeting_materials / 2026 / 20260908</a></li><li class="breadcrumb-item"><a href="../../../meeting_materials/2026/20260908/agenda.html">Agenda</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../self-help/01_finding_documentation.html">self-help</a></li><li class="breadcrumb-item"><a href="../self-help/04_debugging_loops.html">Debugging loops</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -141,7 +141,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../basics/useful_tricks.html" class="sidebar-item-text sidebar-link">
+  <a href="../basics/useful_tricks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Useful tricks</span></a>
   </div>
 </li>
@@ -158,7 +158,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../meeting_materials/2026/20260908/agenda.html" class="sidebar-item-text sidebar-link active">
+  <a href="../meeting_materials/2026/20260908/agenda.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Agenda</span></a>
   </div>
 </li>
@@ -175,25 +175,25 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../self-help/01_finding_documentation.html" class="sidebar-item-text sidebar-link">
+  <a href="../self-help/01_finding_documentation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Finding Documentation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../self-help/02_finding_source_code.html" class="sidebar-item-text sidebar-link">
+  <a href="../self-help/02_finding_source_code.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Finding Source Code</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../self-help/03_debug_with_error_handling.html" class="sidebar-item-text sidebar-link">
+  <a href="../self-help/03_debug_with_error_handling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Debugging with error handling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../self-help/04_debugging_loops.html" class="sidebar-item-text sidebar-link">
+  <a href="../self-help/04_debugging_loops.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Debugging loops</span></a>
   </div>
 </li>
@@ -206,38 +206,29 @@ ul.task-list li input[type="checkbox"] {
 <!-- margin-sidebar -->
     
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../meeting_materials/2026/20260908/agenda.html">meeting_materials / 2026 / 20260908</a></li><li class="breadcrumb-item"><a href="../../../meeting_materials/2026/20260908/agenda.html">Agenda</a></li></ol></nav><h1 class="title display-7">Agenda</h1></header>
+<main class="content" id="quarto-document-content">
 
-<header id="title-block-header">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../self-help/01_finding_documentation.html">self-help</a></li><li class="breadcrumb-item"><a href="../self-help/04_debugging_loops.html">Debugging loops</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Debugging loops</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
 
 
 </header>
 
 
-<section id="pnw-tribal-coding-group-agenda" class="level1" style="text-align: center;">
-<h1>PNW Tribal Coding Group Agenda</h1>
-<section id="september-8th-2026-200-330pm-pdt" class="level3">
-<h3 class="anchored" data-anchor-id="september-8th-2026-200-330pm-pdt">September 8th, 2026, 2:00-3:30pm PDT</h3>
-</section>
-</section>
-<section id="agenda" class="level3">
-<h3 class="anchored" data-anchor-id="agenda">Agenda</h3>
-<ol type="1">
-<li>Welcome and Introductions</li>
-<li>Open questions and announcements</li>
-<li>Loops, the apply family, do.call, and purrr
-<ol type="a">
-<li>Basic reasons for each (functional programming vs.&nbsp;imperative programming; speed and memory considerations)</li>
-<li>Debugging patterns (tryCatch, stop, warning, message)</li>
-<li>Inline logic and anonymous functions</li>
-<li>Segue to next session: modularization via functions, scripts, packages, box, and read_chunk!</li>
-</ol></li>
-<li>Compare base to tidy: merge, join, and bind</li>
-<li>Other tips and tricks</li>
-</ol>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -645,4 +636,4 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/rmcminds/PNWTCG/edit/main/meeting_materials/2026/20260908/agenda.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/rmcminds/PNWTCG/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/rmcminds/PNWTCG/edit/main/self-help/04_debugging_loops.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/rmcminds/PNWTCG/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
