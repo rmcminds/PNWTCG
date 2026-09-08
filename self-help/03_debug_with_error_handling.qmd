@@ -169,6 +169,7 @@ results_8 <- sapply(idx, function(col) {
     }
   )
 })
+print(results_8)
 ```
 
 The results are the same as before, but now we have more compact and efficient code. `sapply` automatically simplifies the output to a matrix and uses the column indices as column names. The error handling is the same, and we still get informative warnings about which columns caused issues. You can also use `purrr::map()` in a similar way (I'm not a tidyverse guy so this might not be the most idiomatic way to do it...):
@@ -186,4 +187,5 @@ results_9 <- map(idx, function(col) {
 }) %>% 
   set_names(idx) %>% 
   do.call(cbind, .)
+print(results_9)
 ```
