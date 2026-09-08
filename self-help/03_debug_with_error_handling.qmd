@@ -4,7 +4,7 @@ title: "Debugging with error handling"
 
 When writing scripts, you rarely want a future run with new data to crash and emit an error message like:
 
-::: {.cell-output .cell-output-stderr}
+::: {.cell-output-err}
 Warning message:
 NAs introduced by coercion 
 :::

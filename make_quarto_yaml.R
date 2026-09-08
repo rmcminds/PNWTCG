@@ -51,6 +51,9 @@ cat(
   type: website
   output-dir: docs
 
+filters:
+  - output-styling
+
 website:
   title: "The Pacific Northwest Tribal Coding Group"
   search: true
