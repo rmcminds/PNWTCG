@@ -480,30 +480,28 @@ numeric value.</code></pre>
 </div>
 <p>The results are the same as before, but now we have more compact and efficient code. <code>sapply</code> automatically simplifies the output to a matrix and uses the column indices as column names. The error handling is the same, and we still get informative warnings about which columns caused issues. You can also use <code>purrr::map()</code> in a similar way (I’m not a tidyverse guy so this might not be the most idiomatic way to do it…):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `library()`:
-! there is no package called 'purrr'</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>results_9 <span class="ot">&lt;-</span> <span class="fu">map</span>(idx, <span class="cf">function</span>(col) {</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round_column_2</span>(test_data_3, col, <span class="dv">2</span>),</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">warning</span>(<span class="st">"Error in column "</span>, col, <span class="st">": "</span>, e<span class="sc">$</span>message)</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">nrow</span>(test_data_3)))</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>}) <span class="sc">%&gt;%</span> </span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(idx) <span class="sc">%&gt;%</span> </span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">do.call</span>(cbind, .)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in round_column_2(test_data_3, col, 2): Row(s) 3 of the specified
+column contain(s) non-numeric values that cannot be rounded.</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>results_9 <span class="ot">&lt;-</span> <span class="fu">map</span>(idx, <span class="cf">function</span>(col) {</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round_column_2</span>(test_data_3, col, <span class="dv">2</span>),</span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">warning</span>(<span class="st">"Error in column "</span>, col, <span class="st">": "</span>, e<span class="sc">$</span>message)</span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">nrow</span>(test_data_3)))</span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>}) <span class="sc">%&gt;%</span> </span>
-<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(idx) <span class="sc">%&gt;%</span> </span>
-<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">do.call</span>(cbind, .)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `map(idx, function(col) {
-    tryCatch(round_column_2(test_data_3, col, 2), error = function(e) {
-      warning("Error in column ", col, ": ", e$message)
-      return(rep(NA, nrow(test_data_3)))
-    })
-  }) %&gt;% set_names(idx) %&gt;% do.call(cbind, .)`:
-! could not find function "%&gt;%"</code></pre>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in value[[3L]](cond): Error in column S: The column number must be a
+numeric value.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in value[[3L]](cond): Error in column 4: subscript out of bounds</code></pre>
 </div>
 </div>
 
