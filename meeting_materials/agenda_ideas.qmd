@@ -1,0 +1,14 @@
+---
+title: "Agenda ideas"
+---
+
+## Topics
+
+::: {.sortable-checklist}
+- [x] apply() family, do.call(), purrr vs loops
+- [x] Debugging patterns (tryCatch, stop, warning, message)
+- [ ] Code modularization: functions, scripts, package, box, read_chunk()
+- [ ] Bayesian statistics with Stan, cmdstanr, and brms
+- [ ] nhdplustools -> hydrogeofetch; EPATADA & dataRetrieval; streamcattools, etc.
+- [ ] Interacting with tools and datasets from the Riverscapes Consortium
+:::

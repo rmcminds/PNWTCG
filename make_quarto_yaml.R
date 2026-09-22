@@ -83,7 +83,17 @@ for (d in dirs) {
 # append more static contents
 cat(
   sprintf(
-    '\n  repo-url: "%s"\n  repo-actions: [edit, issue]\n\nformat:\n  html:\n    theme: cosmo\n',
+    paste0(
+      '\n  repo-url: "%s"\n',
+      '  repo-actions: [edit, issue]\n\n',
+      'format:\n',
+      '  html:\n',
+      '    theme: cosmo\n',
+      '    css:\n',
+      '      - checklist.css\n',
+      '    include-after-body:\n',
+      '      - checklist-sort.js\n'
+    ),
     if (!is.na(repo_base_url) && nzchar(repo_base_url)) repo_base_url else ""
   ),
   file = "_quarto.yml",
