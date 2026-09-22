@@ -91,8 +91,8 @@ cat(
       '    theme: cosmo\n',
       '    css:\n',
       '      - checklist.css\n',
-      '    include-after-body:\n',
-      '      - checklist-sort.html\n'
+      '    include-in-header:\n',
+      '      - checklist-sort-head.html\n'
     ),
     if (!is.na(repo_base_url) && nzchar(repo_base_url)) repo_base_url else ""
   ),
