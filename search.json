@@ -12,53 +12,63 @@
     ]
   },
   {
-    "objectID": "self-help/03_debug_with_error_handling.html",
-    "href": "self-help/03_debug_with_error_handling.html",
-    "title": "Debugging with error handling",
+    "objectID": "self-help/02_finding_source_code.html",
+    "href": "self-help/02_finding_source_code.html",
+    "title": "Finding Source Code",
     "section": "",
-    "text": "When writing scripts, you rarely want a future run with new data to fail with a vague message like:\n\n\nWarning: NAs introduced by coercion\n\n\nThe code ran fine before! Did you run the script with a typo in a parameter? Or is there badly formatted data in your new input file? Which of the 10,000 rows has the bad data??\nIf you’re developing a tool or planning to reuse your script, you can save a lot of headaches in the long-run by writing your code to validate inputs and fail early with bespoke, informative messages.\nFor instance, say you have a function that simply reads a csv and writes a new one with rounded values from a single column:\n\nround_column &lt;- function(df, col_num_raw, prec_raw) {\n  col_num &lt;- as.numeric(col_num_raw)\n  prec    &lt;- as.numeric(prec_raw)\n  round(as.numeric(df[[col_num]]), digits = prec)\n}\n\nYou might run this function with a test dataset:\n\ntest_data_1 &lt;- data.frame(\n  labels = c(\"A\", \"B\", \"C\"),\n  values = c(10.556, 21.891, 3.14159)\n)\nprint(test_data_1)\n\n  labels   values\n1      A 10.55600\n2      B 21.89100\n3      C  3.14159\n\nresults_1 &lt;- round_column(test_data_1, 2, 2)\n\nAnd celebrate that it works!\n\nprint(results_1)\n\n[1] 10.56 21.89  3.14\n\n\nBut then you try some real data:\n\ntest_data_2 &lt;- data.frame(\n  labels = c(\"A\", \"B\", \"C\"),\n  values = c(10.556, 21.891, '3.141S9')\n)\nprint(test_data_2)\n\n  labels  values\n1      A  10.556\n2      B  21.891\n3      C 3.141S9\n\nresults_2 &lt;- round_column(test_data_2, 2, 2)\n\nWarning in round_column(test_data_2, 2, 2): NAs introduced by coercion\n\n\nAnd get the generic warning. In this case, you can print the results to see that the problem was in the last row:\n\nprint(results_2)\n\n[1] 10.56 21.89    NA\n\n\nBut it might not be obvious why. And with more complicated functions, it might not be so easy to see where the problem was. For instance, you could call the function with a non-numeric column number:\n\nresults_3 &lt;- round_column(test_data_2, \"two\", 2)\n\nWarning in round_column(test_data_2, \"two\", 2): NAs introduced by coercion\n\n\nAnd get the exact same warning. Inspecting the results in this case doesn’t really help you figure out what went wrong:\n\nprint(results_3)\n\nnumeric(0)\n\n\nIf you plan to use this function a lot, and the same errors are likely, then you can catch the problem pre-emptively and give a more informative custom warning message:\n\nround_column_2 &lt;- function(df, col_num_raw, prec_raw) {\n  col_num &lt;- suppressWarnings(as.numeric(col_num_raw))\n  if (is.na(col_num)) {\n    stop(\"The column number must be a numeric value.\")\n  }\n  prec &lt;- suppressWarnings(as.numeric(prec_raw))\n  if (is.na(prec)) {\n    stop(\"The precision must be a numeric value.\")\n  }\n  in_values &lt;- suppressWarnings(as.numeric(df[[col_num]]))\n  if (any(is.na(in_values))) {\n    warning(\"Row(s) \", paste(which(is.na(in_values)), collapse = \", \"), \" of the specified column contain(s) non-numeric values that cannot be rounded.\")\n  }\n  round(in_values, digits = prec)\n}\n\nIn that function, I have used stop() where a non-numeric column number or precision would make it impossible to continue, and warning() where the function can still run but the user should be aware that some rows could not be processed. I also used suppressWarnings() to keep the console output more targeted. First, apply the function to the same test dataset as before:\n\nresults_4 &lt;- round_column_2(test_data_2, 2, 2)\n\nWarning in round_column_2(test_data_2, 2, 2): Row(s) 3 of the specified column\ncontain(s) non-numeric values that cannot be rounded.\n\nprint(results_4)\n\n[1] 10.56 21.89    NA\n\n\nAnd let’s also see what happens when we give it a non-numeric column number:\n\nresults_5 &lt;- round_column_2(test_data_2, \"two\", 2)\n\nError in `round_column_2()`:\n! The column number must be a numeric value.\n\nprint(results_5)\n\nError:\n! object 'results_5' not found\n\n\nNow let’s see how this function behaves when looping over multiple columns. First create a new dataset:\n\ntest_data_3 &lt;- data.frame(\n  labels = c(\"A\", \"B\", \"C\"),\n  values_1 = c(10.556, 21.891, '3.141S9'),\n  values_2 = c(1.234, 5.678, 9.012)\n)\nprint(test_data_3)\n\n  labels values_1 values_2\n1      A   10.556    1.234\n2      B   21.891    5.678\n3      C  3.141S9    9.012\n\n\nThen run the function in a for loop over a vector of indices (note that the following code is intentionally written with ‘bad form’ in multiple ways):\n\nidx &lt;- c(2,'S',3,4)\nresults_6 &lt;- matrix(nrow = nrow(test_data_3), ncol = 0)\nfor (col in idx) {\n  res_local &lt;- round_column_2(test_data_3, col, 2)\n  results_6 &lt;- cbind(results_6, res_local)\n}\n\nWarning in round_column_2(test_data_3, col, 2): Row(s) 3 of the specified\ncolumn contain(s) non-numeric values that cannot be rounded.\n\n\nError in `round_column_2()`:\n! The column number must be a numeric value.\n\ncolnames(results_6) &lt;- idx[1:ncol(results_6)]\n\nWarnings and an error. Let’s inspect the results:\n\nprint(results_6)\n\n         2\n[1,] 10.56\n[2,] 21.89\n[3,]    NA\n\n\nThe first iteration partially worked, the second must have caused the error, and the third and fourth never ran. Depending on what we’re doing, we might want to stop the loop when such an error occurs, or we might want to continue on to the next iteration. In the latter case, we can use tryCatch() to catch the error and continue:\n\nresults_7 &lt;- matrix(nrow = nrow(test_data_3), ncol = 0)\nfor (col in idx) {\n  res_local &lt;- tryCatch(\n    round_column_2(test_data_3, col, 2),\n    error = function(e) {\n      warning(\"Error in column \", col, \": \", e$message)\n      return(rep(NA, nrow(test_data_3)))\n    }\n  )\n  results_7 &lt;- cbind(results_7, res_local)\n}\n\nWarning in round_column_2(test_data_3, col, 2): Row(s) 3 of the specified\ncolumn contain(s) non-numeric values that cannot be rounded.\n\n\nWarning in value[[3L]](cond): Error in column S: The column number must be a\nnumeric value.\n\n\nWarning in value[[3L]](cond): Error in column 4: subscript out of bounds\n\ncolnames(results_7) &lt;- idx\n\nThis runs the same function in the same way - but tryCatch catches the error, turns it into a warning, and returns a vector of NAs for that iteration. We see in our new warning that two columns had fatal errors: the second one, ‘S’, wasn’t numeric and couldn’t be mapped to the original data; and the fourth one, 4, didn’t exist. Because we captured the original error message with e$message, we can link that specific warning to the specific column that caused it. And because we returned a vector of NAs, the loop continues to the next iteration and we can inspect the results:\n\nprint(results_7)\n\n         2  S    3  4\n[1,] 10.56 NA 1.23 NA\n[2,] 21.89 NA 5.68 NA\n[3,]    NA NA 9.01 NA\n\n\nThis kind of error handling has also set us up nicely to use R’s functional programming tools like lapply() and purrr::map(), which are often preferred to for loops for various reasons. If you’re used to debugging for loops by inspecting partial results, you may be frustrated by the fact that lapply() and map() don’t return partial results. But with tryCatch and custom error messages, you can still get informative feedback about what went wrong in a single iteration without stopping the entire process. Here’s an example using sapply():\n\nresults_8 &lt;- sapply(idx, function(col) {\n  tryCatch(\n    round_column_2(test_data_3, col, 2),\n    error = function(e) {\n      warning(\"Error in column \", col, \": \", e$message)\n      return(rep(NA, nrow(test_data_3)))\n    }\n  )\n})\n\nWarning in round_column_2(test_data_3, col, 2): Row(s) 3 of the specified\ncolumn contain(s) non-numeric values that cannot be rounded.\n\n\nWarning in value[[3L]](cond): Error in column S: The column number must be a\nnumeric value.\n\n\nWarning in value[[3L]](cond): Error in column 4: subscript out of bounds\n\nprint(results_8)\n\n         2  S    3  4\n[1,] 10.56 NA 1.23 NA\n[2,] 21.89 NA 5.68 NA\n[3,]    NA NA 9.01 NA\n\n\nThe results are the same as before, but now we have more compact and efficient code. sapply automatically simplifies the output to a matrix and uses the column indices as column names. The error handling is the same, and we still get informative warnings about which columns caused issues. You can also use purrr::map() in a similar way (I’m not a tidyverse guy so this might not be the most idiomatic way to do it…):\n\nlibrary(purrr)\nresults_9 &lt;- map(idx, function(col) {\n  tryCatch(\n    round_column_2(test_data_3, col, 2),\n    error = function(e) {\n      warning(\"Error in column \", col, \": \", e$message)\n      return(rep(NA, nrow(test_data_3)))\n    }\n  )\n}) %&gt;% \n  set_names(idx) %&gt;% \n  do.call(cbind, .)\n\nWarning in round_column_2(test_data_3, col, 2): Row(s) 3 of the specified\ncolumn contain(s) non-numeric values that cannot be rounded.\n\n\nWarning in value[[3L]](cond): Error in column S: The column number must be a\nnumeric value.\n\n\nWarning in value[[3L]](cond): Error in column 4: subscript out of bounds\n\nprint(results_9)\n\n         2  S    3  4\n[1,] 10.56 NA 1.23 NA\n[2,] 21.89 NA 5.68 NA\n[3,]    NA NA 9.01 NA",
+    "text": "Sometimes, the documentation doesn’t tell you everything you need to know. You need to get elbow-deep in the code",
     "crumbs": [
       "Home",
       "self-help",
-      "Debugging with error handling"
+      "Finding Source Code"
     ]
   },
   {
-    "objectID": "basics/useful_tricks.html",
-    "href": "basics/useful_tricks.html",
-    "title": "Useful tricks",
-    "section": "",
-    "text": "dput() !\nPrint code to the console that can be used to recreate the object\n\nhi &lt;- c(1,2,3)\ndput(hi)\n\nc(1, 2, 3)\n\nhi2 &lt;- 4:6\ndput(hi2)\n\n4:6",
+    "objectID": "self-help/02_finding_source_code.html#first-attempt",
+    "href": "self-help/02_finding_source_code.html#first-attempt",
+    "title": "Finding Source Code",
+    "section": "First attempt",
+    "text": "First attempt\nThe source code for many functions can be found by simply calling the function without parentheses.\n\nhello_world &lt;- \\() {\n  print(\"Hello, world!\")\n}\nhello_world()\n\n[1] \"Hello, world!\"\n\nhello_world\n\nfunction () \n{\n    print(\"Hello, world!\")\n}",
     "crumbs": [
       "Home",
-      "basics",
-      "Useful tricks"
+      "self-help",
+      "Finding Source Code"
     ]
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Home",
-    "section": "",
-    "text": "This site contains rendered .qmd files in the same directory structure as the source repository.\nUse the navigation sidebar to browse the available documents."
-  },
-  {
-    "objectID": "index.html#search",
-    "href": "index.html#search",
-    "title": "Home",
-    "section": "Search",
-    "text": "Search\nUse the search box in the sidebar (or press /) to quickly find pages by title or content."
-  },
-  {
-    "objectID": "base_vs_tidy/merge_join_and_bind.html",
-    "href": "base_vs_tidy/merge_join_and_bind.html",
-    "title": "Merge, Join, and Bind",
-    "section": "",
-    "text": "We have two data frames, df1 and df2, that we want to combine.\n\ndf1 &lt;- data.frame(id = 1:3, letter = c(\"A\", \"B\", \"C\"))\nprint(df1)\n\n  id letter\n1  1      A\n2  2      B\n3  3      C\n\ndf2 &lt;- data.frame(id = 2:4, value = c(10, 20, 30))\nprint(df2)\n\n  id value\n1  2    10\n2  3    20\n3  4    30\n\n\nIn base R, we use merge():\n\nmerged_df &lt;- merge(df1, df2, by = \"id\")\nprint(merged_df)\n\n  id letter value\n1  2      B    10\n2  3      C    20\n\n\nThe default behavior of merge() is an inner join, which means that only rows with matching id values in both data frames are included in the result. To get the same result using the tidyverse, we can use dplyr::inner_join():\n\nlibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\ninner_join_df &lt;- inner_join(df1, df2, by = \"id\")\nprint(inner_join_df)\n\n  id letter value\n1  2      B    10\n2  3      C    20\n\n\nIf we want to include all rows from df1 and only matching rows from df2, we can use the all.x = TRUE argument in merge():\n\nleft_join_df &lt;- merge(df1, df2, by = \"id\", all.x = TRUE)\nprint(left_join_df)\n\n  id letter value\n1  1      A    NA\n2  2      B    10\n3  3      C    20\n\n\nAnd in the tidyverse, we can use dplyr::left_join():\n\nleft_join_df_tidy &lt;- left_join(df1, df2, by = \"id\")\nprint(left_join_df_tidy)\n\n  id letter value\n1  1      A    NA\n2  2      B    10\n3  3      C    20\n\n\nIf we want to include all rows from df2 and only matching rows from df1, we can use the all.y = TRUE argument in merge():\n\nright_join_df &lt;- merge(df1, df2, by = \"id\", all.y = TRUE)\nprint(right_join_df)\n\n  id letter value\n1  2      B    10\n2  3      C    20\n3  4   &lt;NA&gt;    30\n\n\nAnd in the tidyverse, we can use dplyr::right_join():\n\nright_join_df_tidy &lt;- right_join(df1, df2, by = \"id\")\nprint(right_join_df_tidy)\n\n  id letter value\n1  2      B    10\n2  3      C    20\n3  4   &lt;NA&gt;    30\n\n\nIf we want to include all rows from both df1 and df2, we can use the all = TRUE argument in merge():\n\nfull_join_df &lt;- merge(df1, df2, by = \"id\", all = TRUE)\nprint(full_join_df)\n\n  id letter value\n1  1      A    NA\n2  2      B    10\n3  3      C    20\n4  4   &lt;NA&gt;    30\n\n\nAnd in the tidyverse, we can use dplyr::full_join():\n\nfull_join_df_tidy &lt;- full_join(df1, df2, by = \"id\")\nprint(full_join_df_tidy)\n\n  id letter value\n1  1      A    NA\n2  2      B    10\n3  3      C    20\n4  4   &lt;NA&gt;    30\n\n\nMerge automatically sorts the result by the by column(s). If you want to keep the original order, you can use the sort = FALSE argument in merge(). The dplyr functions do not automatically sort the result.\nWhen both data.frames have columns with the same name, both merge() and the dplyr join functions will add suffixes to the column names to distinguish them. You can specify your own suffixes using the suffixes argument in merge() or the suffix argument in the dplyr join functions.\nWhen the columns used for merging have different names in the two data frames, you can use the by.x and by.y arguments in merge() or the by argument in the dplyr join functions to specify which columns to use for merging.\nmerge() can be slow for large datasets, so some people recommend dplyr for performance reasons. However, I’ve seen benchmarks showing that base R is considerably faster. To get real speed improvements, though, you can also use the data.table package. It is far faster than either base R or dplyr, and has a merge() function with syntax similar to base R’s merge(). data.table also has other highly-optimized functions, like fread(), which are indispensable for working with large datasets.\n#TODO: do some benchmarks right in this document",
+    "objectID": "self-help/02_finding_source_code.html#finding-the-source-code-for-s3-and-s4-methods",
+    "href": "self-help/02_finding_source_code.html#finding-the-source-code-for-s3-and-s4-methods",
+    "title": "Finding Source Code",
+    "section": "Finding the source code for S3 and S4 methods",
+    "text": "Finding the source code for S3 and S4 methods\nGeneric functions, which have different methods for different classes of objects, require the specific method to be called. You can use the methods() function to see what methods are available for a generic function, and then append the method to the generic function name to see the source code for that specific method.\n\nmethods(mean)\n\n[1] mean.Date     mean.default  mean.difftime mean.POSIXct  mean.POSIXlt \n[6] mean.quosure*\nsee '?methods' for accessing help and source code\n\nmean.default\n\nfunction (x, trim = 0, na.rm = FALSE, ...) \n{\n    if (!is.numeric(x) && !is.complex(x) && !is.logical(x)) {\n        warning(\"argument is not numeric or logical: returning NA\")\n        return(NA_real_)\n    }\n    if (isTRUE(na.rm)) \n        x &lt;- x[!is.na(x)]\n    if (!is.numeric(trim) || length(trim) != 1L) \n        stop(\"'trim' must be numeric of length one\")\n    n &lt;- length(x)\n    if (trim &gt; 0 && n) {\n        if (is.complex(x)) \n            stop(\"trimmed means are not defined for complex data\")\n        if (anyNA(x)) \n            return(NA_real_)\n        if (trim &gt;= 0.5) \n            return(stats::median(x, na.rm = FALSE))\n        lo &lt;- floor(n * trim) + 1\n        hi &lt;- n + 1 - lo\n        x &lt;- sort.int(x, partial = unique(c(lo, hi)))[lo:hi]\n    }\n    .Internal(mean(x))\n}\n&lt;bytecode: 0x5619ce7f4f18&gt;\n&lt;environment: namespace:base&gt;",
     "crumbs": [
       "Home",
-      "base_vs_tidy",
-      "Merge, Join, and Bind"
+      "self-help",
+      "Finding Source Code"
+    ]
+  },
+  {
+    "objectID": "self-help/02_finding_source_code.html#finding-the-source-code-for-r6-methods",
+    "href": "self-help/02_finding_source_code.html#finding-the-source-code-for-r6-methods",
+    "title": "Finding Source Code",
+    "section": "Finding the source code for R6 methods",
+    "text": "Finding the source code for R6 methods\nR6 objects are a bit harder because the methods are stored in the object itself. If you have an R6 object, you can use the $ operator and the name of the source just like a simpler function.\n\nlibrary(cmdstanr)\nfile &lt;- file.path(cmdstan_path(), \"examples/bernoulli/bernoulli.stan\")\nmod  &lt;- cmdstan_model(file)\nmod$sample\n\nIf you don’t yet have an R6 object, the class name is usually the same as the function that creates it, and although that function may not be exported when you use library(), you can use the ::: operator and find the method under public_methods.\n\ncmdstanr:::CmdStanModel$public_methods$sample",
+    "crumbs": [
+      "Home",
+      "self-help",
+      "Finding Source Code"
+    ]
+  },
+  {
+    "objectID": "self-help/02_finding_source_code.html#finding-the-one-true-source",
+    "href": "self-help/02_finding_source_code.html#finding-the-one-true-source",
+    "title": "Finding Source Code",
+    "section": "Finding the One True Source",
+    "text": "Finding the One True Source\nFunctions of course call other functions, and some call on tools that are written in another language or even compiled code. You’ll have to follow that trail of breadcrumbs.",
+    "crumbs": [
+      "Home",
+      "self-help",
+      "Finding Source Code"
     ]
   },
   {
@@ -146,63 +156,77 @@
     ]
   },
   {
-    "objectID": "self-help/02_finding_source_code.html",
-    "href": "self-help/02_finding_source_code.html",
-    "title": "Finding Source Code",
+    "objectID": "base_vs_tidy/merge_join_and_bind.html",
+    "href": "base_vs_tidy/merge_join_and_bind.html",
+    "title": "Merge, Join, and Bind",
     "section": "",
-    "text": "Sometimes, the documentation doesn’t tell you everything you need to know. You need to get elbow-deep in the code",
+    "text": "We have two data frames, df1 and df2, that we want to combine.\n\ndf1 &lt;- data.frame(id = 1:3, letter = c(\"A\", \"B\", \"C\"))\nprint(df1)\n\n  id letter\n1  1      A\n2  2      B\n3  3      C\n\ndf2 &lt;- data.frame(id = 2:4, value = c(10, 20, 30))\nprint(df2)\n\n  id value\n1  2    10\n2  3    20\n3  4    30\n\n\nIn base R, we use merge():\n\nmerged_df &lt;- merge(df1, df2, by = \"id\")\nprint(merged_df)\n\n  id letter value\n1  2      B    10\n2  3      C    20\n\n\nThe default behavior of merge() is an inner join, which means that only rows with matching id values in both data frames are included in the result. To get the same result using the tidyverse, we can use dplyr::inner_join():\n\nlibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\ninner_join_df &lt;- inner_join(df1, df2, by = \"id\")\nprint(inner_join_df)\n\n  id letter value\n1  2      B    10\n2  3      C    20\n\n\nIf we want to include all rows from df1 and only matching rows from df2, we can use the all.x = TRUE argument in merge():\n\nleft_join_df &lt;- merge(df1, df2, by = \"id\", all.x = TRUE)\nprint(left_join_df)\n\n  id letter value\n1  1      A    NA\n2  2      B    10\n3  3      C    20\n\n\nAnd in the tidyverse, we can use dplyr::left_join():\n\nleft_join_df_tidy &lt;- left_join(df1, df2, by = \"id\")\nprint(left_join_df_tidy)\n\n  id letter value\n1  1      A    NA\n2  2      B    10\n3  3      C    20\n\n\nIf we want to include all rows from df2 and only matching rows from df1, we can use the all.y = TRUE argument in merge():\n\nright_join_df &lt;- merge(df1, df2, by = \"id\", all.y = TRUE)\nprint(right_join_df)\n\n  id letter value\n1  2      B    10\n2  3      C    20\n3  4   &lt;NA&gt;    30\n\n\nAnd in the tidyverse, we can use dplyr::right_join():\n\nright_join_df_tidy &lt;- right_join(df1, df2, by = \"id\")\nprint(right_join_df_tidy)\n\n  id letter value\n1  2      B    10\n2  3      C    20\n3  4   &lt;NA&gt;    30\n\n\nIf we want to include all rows from both df1 and df2, we can use the all = TRUE argument in merge():\n\nfull_join_df &lt;- merge(df1, df2, by = \"id\", all = TRUE)\nprint(full_join_df)\n\n  id letter value\n1  1      A    NA\n2  2      B    10\n3  3      C    20\n4  4   &lt;NA&gt;    30\n\n\nAnd in the tidyverse, we can use dplyr::full_join():\n\nfull_join_df_tidy &lt;- full_join(df1, df2, by = \"id\")\nprint(full_join_df_tidy)\n\n  id letter value\n1  1      A    NA\n2  2      B    10\n3  3      C    20\n4  4   &lt;NA&gt;    30\n\n\nMerge automatically sorts the result by the by column(s). If you want to keep the original order, you can use the sort = FALSE argument in merge(). The dplyr functions do not automatically sort the result.\nWhen both data.frames have columns with the same name, both merge() and the dplyr join functions will add suffixes to the column names to distinguish them. You can specify your own suffixes using the suffixes argument in merge() or the suffix argument in the dplyr join functions.\nWhen the columns used for merging have different names in the two data frames, you can use the by.x and by.y arguments in merge() or the by argument in the dplyr join functions to specify which columns to use for merging.\nmerge() can be slow for large datasets, so some people recommend dplyr for performance reasons. However, I’ve seen benchmarks showing that base R is considerably faster. To get real speed improvements, though, you can also use the data.table package. It is far faster than either base R or dplyr, and has a merge() function with syntax similar to base R’s merge(). data.table also has other highly-optimized functions, like fread(), which are indispensable for working with large datasets.\n#TODO: do some benchmarks right in this document",
     "crumbs": [
       "Home",
-      "self-help",
-      "Finding Source Code"
+      "base_vs_tidy",
+      "Merge, Join, and Bind"
     ]
   },
   {
-    "objectID": "self-help/02_finding_source_code.html#first-attempt",
-    "href": "self-help/02_finding_source_code.html#first-attempt",
-    "title": "Finding Source Code",
-    "section": "First attempt",
-    "text": "First attempt\nThe source code for many functions can be found by simply calling the function without parentheses.\n\nhello_world &lt;- \\() {\n  print(\"Hello, world!\")\n}\nhello_world()\n\n[1] \"Hello, world!\"\n\nhello_world\n\nfunction () \n{\n    print(\"Hello, world!\")\n}",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Home",
+    "section": "",
+    "text": "This site contains rendered .qmd files in the same directory structure as the source repository.\nUse the navigation sidebar to browse the available documents."
+  },
+  {
+    "objectID": "index.html#search",
+    "href": "index.html#search",
+    "title": "Home",
+    "section": "Search",
+    "text": "Search\nUse the search box in the sidebar (or press /) to quickly find pages by title or content."
+  },
+  {
+    "objectID": "basics/useful_tricks.html",
+    "href": "basics/useful_tricks.html",
+    "title": "Useful tricks",
+    "section": "",
+    "text": "dput() !\nPrint code to the console that can be used to recreate the object\n\nhi &lt;- c(1,2,3)\ndput(hi)\n\nc(1, 2, 3)\n\nhi2 &lt;- 4:6\ndput(hi2)\n\n4:6",
     "crumbs": [
       "Home",
-      "self-help",
-      "Finding Source Code"
+      "basics",
+      "Useful tricks"
     ]
   },
   {
-    "objectID": "self-help/02_finding_source_code.html#finding-the-source-code-for-s3-and-s4-methods",
-    "href": "self-help/02_finding_source_code.html#finding-the-source-code-for-s3-and-s4-methods",
-    "title": "Finding Source Code",
-    "section": "Finding the source code for S3 and S4 methods",
-    "text": "Finding the source code for S3 and S4 methods\nGeneric functions, which have different methods for different classes of objects, require the specific method to be called. You can use the methods() function to see what methods are available for a generic function, and then append the method to the generic function name to see the source code for that specific method.\n\nmethods(mean)\n\n[1] mean.Date     mean.default  mean.difftime mean.POSIXct  mean.POSIXlt \n[6] mean.quosure*\nsee '?methods' for accessing help and source code\n\nmean.default\n\nfunction (x, trim = 0, na.rm = FALSE, ...) \n{\n    if (!is.numeric(x) && !is.complex(x) && !is.logical(x)) {\n        warning(\"argument is not numeric or logical: returning NA\")\n        return(NA_real_)\n    }\n    if (isTRUE(na.rm)) \n        x &lt;- x[!is.na(x)]\n    if (!is.numeric(trim) || length(trim) != 1L) \n        stop(\"'trim' must be numeric of length one\")\n    n &lt;- length(x)\n    if (trim &gt; 0 && n) {\n        if (is.complex(x)) \n            stop(\"trimmed means are not defined for complex data\")\n        if (anyNA(x)) \n            return(NA_real_)\n        if (trim &gt;= 0.5) \n            return(stats::median(x, na.rm = FALSE))\n        lo &lt;- floor(n * trim) + 1\n        hi &lt;- n + 1 - lo\n        x &lt;- sort.int(x, partial = unique(c(lo, hi)))[lo:hi]\n    }\n    .Internal(mean(x))\n}\n&lt;bytecode: 0x55ef95cb2a88&gt;\n&lt;environment: namespace:base&gt;",
+    "objectID": "self-help/03_debug_with_error_handling.html",
+    "href": "self-help/03_debug_with_error_handling.html",
+    "title": "Debugging with error handling",
+    "section": "",
+    "text": "When writing scripts, you rarely want a future run with new data to fail with a vague message like:\n\n\nWarning: NAs introduced by coercion\n\n\nThe code ran fine before! Did you run the script with a typo in a parameter? Or is there badly formatted data in your new input file? Which of the 10,000 rows has the bad data??\nIf you’re developing a tool or planning to reuse your script, you can save a lot of headaches in the long-run by writing your code to validate inputs and fail early with bespoke, informative messages.\nFor instance, say you have a function that simply reads a csv and writes a new one with rounded values from a single column:\n\nround_column &lt;- function(df, col_num_raw, prec_raw) {\n  col_num &lt;- as.numeric(col_num_raw)\n  prec    &lt;- as.numeric(prec_raw)\n  round(as.numeric(df[[col_num]]), digits = prec)\n}\n\nYou might run this function with a test dataset:\n\ntest_data_1 &lt;- data.frame(\n  labels = c(\"A\", \"B\", \"C\"),\n  values = c(10.556, 21.891, 3.14159)\n)\nprint(test_data_1)\n\n  labels   values\n1      A 10.55600\n2      B 21.89100\n3      C  3.14159\n\nresults_1 &lt;- round_column(test_data_1, 2, 2)\n\nAnd celebrate that it works!\n\nprint(results_1)\n\n[1] 10.56 21.89  3.14\n\n\nBut then you try some real data:\n\ntest_data_2 &lt;- data.frame(\n  labels = c(\"A\", \"B\", \"C\"),\n  values = c(10.556, 21.891, '3.141S9')\n)\nprint(test_data_2)\n\n  labels  values\n1      A  10.556\n2      B  21.891\n3      C 3.141S9\n\nresults_2 &lt;- round_column(test_data_2, 2, 2)\n\nWarning in round_column(test_data_2, 2, 2): NAs introduced by coercion\n\n\nAnd get the generic warning. In this case, you can print the results to see that the problem was in the last row:\n\nprint(results_2)\n\n[1] 10.56 21.89    NA\n\n\nBut it might not be obvious why. And with more complicated functions, it might not be so easy to see where the problem was. For instance, you could call the function with a non-numeric column number:\n\nresults_3 &lt;- round_column(test_data_2, \"two\", 2)\n\nWarning in round_column(test_data_2, \"two\", 2): NAs introduced by coercion\n\n\nAnd get the exact same warning. Inspecting the results in this case doesn’t really help you figure out what went wrong:\n\nprint(results_3)\n\nnumeric(0)\n\n\nIf you plan to use this function a lot, and the same errors are likely, then you can catch the problem pre-emptively and give a more informative custom warning message:\n\nround_column_2 &lt;- function(df, col_num_raw, prec_raw) {\n  col_num &lt;- suppressWarnings(as.numeric(col_num_raw))\n  if (is.na(col_num)) {\n    stop(\"The column number must be a numeric value.\")\n  }\n  prec &lt;- suppressWarnings(as.numeric(prec_raw))\n  if (is.na(prec)) {\n    stop(\"The precision must be a numeric value.\")\n  }\n  in_values &lt;- suppressWarnings(as.numeric(df[[col_num]]))\n  if (any(is.na(in_values))) {\n    warning(\"Row(s) \", paste(which(is.na(in_values)), collapse = \", \"), \" of the specified column contain(s) non-numeric values that cannot be rounded.\")\n  }\n  round(in_values, digits = prec)\n}\n\nIn that function, I have used stop() where a non-numeric column number or precision would make it impossible to continue, and warning() where the function can still run but the user should be aware that some rows could not be processed. I also used suppressWarnings() to keep the console output more targeted. First, apply the function to the same test dataset as before:\n\nresults_4 &lt;- round_column_2(test_data_2, 2, 2)\n\nWarning in round_column_2(test_data_2, 2, 2): Row(s) 3 of the specified column\ncontain(s) non-numeric values that cannot be rounded.\n\nprint(results_4)\n\n[1] 10.56 21.89    NA\n\n\nAnd let’s also see what happens when we give it a non-numeric column number:\n\nresults_5 &lt;- round_column_2(test_data_2, \"two\", 2)\n\nError in `round_column_2()`:\n! The column number must be a numeric value.\n\nprint(results_5)\n\nError:\n! object 'results_5' not found\n\n\nNow let’s see how this function behaves when looping over multiple columns. First create a new dataset:\n\ntest_data_3 &lt;- data.frame(\n  labels = c(\"A\", \"B\", \"C\"),\n  values_1 = c(10.556, 21.891, '3.141S9'),\n  values_2 = c(1.234, 5.678, 9.012)\n)\nprint(test_data_3)\n\n  labels values_1 values_2\n1      A   10.556    1.234\n2      B   21.891    5.678\n3      C  3.141S9    9.012\n\n\nThen run the function in a for loop over a vector of indices (note that the following code is intentionally written with ‘bad form’ in multiple ways):\n\nidx &lt;- c(2,'S',3,4)\nresults_6 &lt;- matrix(nrow = nrow(test_data_3), ncol = 0)\nfor (col in idx) {\n  res_local &lt;- round_column_2(test_data_3, col, 2)\n  results_6 &lt;- cbind(results_6, res_local)\n}\n\nWarning in round_column_2(test_data_3, col, 2): Row(s) 3 of the specified\ncolumn contain(s) non-numeric values that cannot be rounded.\n\n\nError in `round_column_2()`:\n! The column number must be a numeric value.\n\ncolnames(results_6) &lt;- idx[1:ncol(results_6)]\n\nWarnings and an error. Let’s inspect the results:\n\nprint(results_6)\n\n         2\n[1,] 10.56\n[2,] 21.89\n[3,]    NA\n\n\nThe first iteration partially worked, the second must have caused the error, and the third and fourth never ran. Depending on what we’re doing, we might want to stop the loop when such an error occurs, or we might want to continue on to the next iteration. In the latter case, we can use tryCatch() to catch the error and continue:\n\nresults_7 &lt;- matrix(nrow = nrow(test_data_3), ncol = 0)\nfor (col in idx) {\n  res_local &lt;- tryCatch(\n    round_column_2(test_data_3, col, 2),\n    error = function(e) {\n      warning(\"Error in column \", col, \": \", e$message)\n      return(rep(NA, nrow(test_data_3)))\n    }\n  )\n  results_7 &lt;- cbind(results_7, res_local)\n}\n\nWarning in round_column_2(test_data_3, col, 2): Row(s) 3 of the specified\ncolumn contain(s) non-numeric values that cannot be rounded.\n\n\nWarning in value[[3L]](cond): Error in column S: The column number must be a\nnumeric value.\n\n\nWarning in value[[3L]](cond): Error in column 4: subscript out of bounds\n\ncolnames(results_7) &lt;- idx\n\nThis runs the same function in the same way - but tryCatch catches the error, turns it into a warning, and returns a vector of NAs for that iteration. We see in our new warning that two columns had fatal errors: the second one, ‘S’, wasn’t numeric and couldn’t be mapped to the original data; and the fourth one, 4, didn’t exist. Because we captured the original error message with e$message, we can link that specific warning to the specific column that caused it. And because we returned a vector of NAs, the loop continues to the next iteration and we can inspect the results:\n\nprint(results_7)\n\n         2  S    3  4\n[1,] 10.56 NA 1.23 NA\n[2,] 21.89 NA 5.68 NA\n[3,]    NA NA 9.01 NA\n\n\nThis kind of error handling has also set us up nicely to use R’s functional programming tools like lapply() and purrr::map(), which are often preferred to for loops for various reasons. If you’re used to debugging for loops by inspecting partial results, you may be frustrated by the fact that lapply() and map() don’t return partial results. But with tryCatch and custom error messages, you can still get informative feedback about what went wrong in a single iteration without stopping the entire process. Here’s an example using sapply():\n\nresults_8 &lt;- sapply(idx, function(col) {\n  tryCatch(\n    round_column_2(test_data_3, col, 2),\n    error = function(e) {\n      warning(\"Error in column \", col, \": \", e$message)\n      return(rep(NA, nrow(test_data_3)))\n    }\n  )\n})\n\nWarning in round_column_2(test_data_3, col, 2): Row(s) 3 of the specified\ncolumn contain(s) non-numeric values that cannot be rounded.\n\n\nWarning in value[[3L]](cond): Error in column S: The column number must be a\nnumeric value.\n\n\nWarning in value[[3L]](cond): Error in column 4: subscript out of bounds\n\nprint(results_8)\n\n         2  S    3  4\n[1,] 10.56 NA 1.23 NA\n[2,] 21.89 NA 5.68 NA\n[3,]    NA NA 9.01 NA\n\n\nThe results are the same as before, but now we have more compact and efficient code. sapply automatically simplifies the output to a matrix and uses the column indices as column names. The error handling is the same, and we still get informative warnings about which columns caused issues. You can also use purrr::map() in a similar way (I’m not a tidyverse guy so this might not be the most idiomatic way to do it…):\n\nlibrary(purrr)\nresults_9 &lt;- map(idx, function(col) {\n  tryCatch(\n    round_column_2(test_data_3, col, 2),\n    error = function(e) {\n      warning(\"Error in column \", col, \": \", e$message)\n      return(rep(NA, nrow(test_data_3)))\n    }\n  )\n}) %&gt;% \n  set_names(idx) %&gt;% \n  do.call(cbind, .)\n\nWarning in round_column_2(test_data_3, col, 2): Row(s) 3 of the specified\ncolumn contain(s) non-numeric values that cannot be rounded.\n\n\nWarning in value[[3L]](cond): Error in column S: The column number must be a\nnumeric value.\n\n\nWarning in value[[3L]](cond): Error in column 4: subscript out of bounds\n\nprint(results_9)\n\n         2  S    3  4\n[1,] 10.56 NA 1.23 NA\n[2,] 21.89 NA 5.68 NA\n[3,]    NA NA 9.01 NA",
     "crumbs": [
       "Home",
       "self-help",
-      "Finding Source Code"
+      "Debugging with error handling"
     ]
   },
   {
-    "objectID": "self-help/02_finding_source_code.html#finding-the-source-code-for-r6-methods",
-    "href": "self-help/02_finding_source_code.html#finding-the-source-code-for-r6-methods",
-    "title": "Finding Source Code",
-    "section": "Finding the source code for R6 methods",
-    "text": "Finding the source code for R6 methods\nR6 objects are a bit harder because the methods are stored in the object itself. If you have an R6 object, you can use the $ operator and the name of the source just like a simpler function.\n\nlibrary(cmdstanr)\nfile &lt;- file.path(cmdstan_path(), \"examples/bernoulli/bernoulli.stan\")\nmod  &lt;- cmdstan_model(file)\nmod$sample\n\nIf you don’t yet have an R6 object, the class name is usually the same as the function that creates it, and although that function may not be exported when you use library(), you can use the ::: operator and find the method under public_methods.\n\ncmdstanr:::CmdStanModel$public_methods$sample",
+    "objectID": "meeting_materials/agenda_ideas.html",
+    "href": "meeting_materials/agenda_ideas.html",
+    "title": "Agenda ideas",
+    "section": "",
+    "text": "apply() family, do.call(), purrr vs loops\nDebugging patterns (tryCatch, stop, warning, message)\nCode modularization: functions, scripts, package, box, read_chunk()\nBayesian statistics with Stan, cmdstanr, and brms\nnhdplustools -&gt; hydrogeofetch; EPATADA & dataRetrieval; streamcattools, etc.\nInteracting with tools and datasets from the Riverscapes Consortium",
     "crumbs": [
       "Home",
-      "self-help",
-      "Finding Source Code"
+      "meeting_materials",
+      "Agenda ideas"
     ]
   },
   {
-    "objectID": "self-help/02_finding_source_code.html#finding-the-one-true-source",
-    "href": "self-help/02_finding_source_code.html#finding-the-one-true-source",
-    "title": "Finding Source Code",
-    "section": "Finding the One True Source",
-    "text": "Finding the One True Source\nFunctions of course call other functions, and some call on tools that are written in another language or even compiled code. You’ll have to follow that trail of breadcrumbs.",
+    "objectID": "meeting_materials/agenda_ideas.html#topics",
+    "href": "meeting_materials/agenda_ideas.html#topics",
+    "title": "Agenda ideas",
+    "section": "",
+    "text": "apply() family, do.call(), purrr vs loops\nDebugging patterns (tryCatch, stop, warning, message)\nCode modularization: functions, scripts, package, box, read_chunk()\nBayesian statistics with Stan, cmdstanr, and brms\nnhdplustools -&gt; hydrogeofetch; EPATADA & dataRetrieval; streamcattools, etc.\nInteracting with tools and datasets from the Riverscapes Consortium",
     "crumbs": [
       "Home",
-      "self-help",
-      "Finding Source Code"
+      "meeting_materials",
+      "Agenda ideas"
     ]
   }
 ]

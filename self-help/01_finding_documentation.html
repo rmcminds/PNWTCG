@@ -111,6 +111,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
 
+<link rel="stylesheet" href="../checklist.css">
 </head>
 
 <body class="nav-sidebar docked nav-fixed fullcontent quarto-light">
@@ -202,12 +203,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">meeting_materials / 2026 / 20260908</span></a>
+ <span class="menu-text">meeting_materials</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../meeting_materials/agenda_ideas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Agenda ideas</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">meeting_materials / 2026 / 20260908</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../meeting_materials/2026/20260908/agenda.html" class="sidebar-item-text sidebar-link">
@@ -218,13 +236,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
  <span class="menu-text">self-help</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../self-help/01_finding_documentation.html" class="sidebar-item-text sidebar-link active">
@@ -396,6 +414,28 @@ see '?methods' for accessing help and source code</code></pre>
 </section>
 
 </main> <!-- /main -->
+document.addEventListener("DOMContentLoaded", () =&gt; {
+  document.querySelectorAll(".sortable-checklist").forEach((container) =&gt; {
+    const lists = container.querySelectorAll("ul.task-list");
+
+    lists.forEach((list) =&gt; {
+      const items = Array.from(list.children).filter((node) =&gt; node.tagName === "LI");
+
+      items.sort((a, b) =&gt; {
+        const aChecked = a.classList.contains("task-list-item") &amp;&amp; a.classList.contains("task-list-item-checkbox-checked");
+        const bChecked = b.classList.contains("task-list-item") &amp;&amp; b.classList.contains("task-list-item-checkbox-checked");
+
+        if (aChecked === bChecked) {
+          return 0;
+        }
+
+        return aChecked ? 1 : -1;
+      });
+
+      items.forEach((item) =&gt; list.appendChild(item));
+    });
+  });
+});
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
