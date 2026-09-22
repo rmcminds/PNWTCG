@@ -92,7 +92,7 @@ cat(
       '    css:\n',
       '      - checklist.css\n',
       '    include-after-body:\n',
-      '      - checklist-sort.js\n'
+      '      - checklist-sort.html\n'
     ),
     if (!is.na(repo_base_url) && nzchar(repo_base_url)) repo_base_url else ""
   ),
