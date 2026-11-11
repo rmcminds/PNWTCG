@@ -53,16 +53,38 @@ website:
 ', file = "_quarto.yml"
 )
 
-# append the sections and their contents to the yml file
-for (d in dirs) {
-  section_name <- gsub("/", " / ", d)
-  cat(sprintf('      - section: "%s"\n', section_name), file = "_quarto.yml", append = TRUE)
-  cat('        contents:\n', file = "_quarto.yml", append = TRUE)
+# Build every directory level represented by the Quarto files.
+all_dirs <- unique(unlist(lapply(dirs, function(d) {
+  if (d == ".") return(character())
+  parts <- strsplit(d, "/", fixed = TRUE)[[1]]
+  vapply(seq_along(parts), function(i) paste(parts[seq_len(i)], collapse = "/"), character(1))
+})))
+top_dirs <- all_dirs[!grepl("/", all_dirs)]
 
-  these <- qmd_files[dirname(qmd_files) == d]
-  for (f in these) {
-    cat(sprintf('          - %s\n', f), file = "_quarto.yml", append = TRUE)
+yaml_quote <- function(x) encodeString(x, quote = '"')
+
+render_sidebar_dir <- function(d, indent) {
+  pad <- strrep(" ", indent)
+  lines <- c(
+    sprintf('%s- section: %s\n', pad, yaml_quote(basename(d))),
+    sprintf('%s  contents:\n', pad)
+  )
+
+  these <- sort(qmd_files[dirname(qmd_files) == d])
+  lines <- c(lines, sprintf('%s    - %s\n', pad, vapply(these, yaml_quote, character(1))))
+
+  children <- sort(all_dirs[dirname(all_dirs) == d])
+  for (child in children) {
+    lines <- c(lines, render_sidebar_dir(child, indent + 4L))
   }
+  lines
+}
+
+root_files <- sort(qmd_files[dirname(qmd_files) == "."])
+cat(sprintf('      - %s\n', vapply(root_files, yaml_quote, character(1))),
+    file = "_quarto.yml", append = TRUE, sep = "")
+for (d in sort(top_dirs)) {
+  cat(render_sidebar_dir(d, 6L), file = "_quarto.yml", append = TRUE, sep = "")
 }
 
 # append more static contents
