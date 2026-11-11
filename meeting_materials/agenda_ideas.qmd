@@ -11,6 +11,7 @@ title: "Agenda ideas"
 - [x] Debugging patterns (tryCatch, stop, warning, message)
 - [ ] Code modularization: functions, scripts, package, box, read_chunk()
 - [ ] python, Python, PYTHON
+- [ ] power and efficiency: compiled code, memory locality, vectorization, parallelization, GPUs...
 :::
 
 ### Stats and modeling
@@ -52,6 +53,7 @@ title: "Agenda ideas"
 - [ ] Security hygiene: information to keep out of scripts, where to keep secure keys, GitHub secrets, etc.
 - [ ] Data formats: csv, tsv, json 
 - [ ] Databases: sqlite, mysql, arrow, parquet
+:::
 
 ### Other
 
